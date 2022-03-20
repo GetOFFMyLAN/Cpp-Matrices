@@ -7,13 +7,36 @@ using std::cout, std::endl;
 // constructors and desutrctors
 
 /* 
-* default construction of an n x m matrix
+* default constructor`
+*/
+Matrix::Matrix() : rows{1}, columns{1}, A{new int*[rows]} {
+	for (size_t i = 0; i < rows; i++) {
+		A[i] = new int[columns]{0};
+	}
+}
+
+
+/* 
+* construction of a matrix of size mxn with vall values the same
 */
 Matrix::Matrix(size_t m, size_t n, int value) : rows{m}, columns{n}, A{new int*[rows]} {
 	for (size_t i = 0; i < rows; i++) {
-		A[i] = new int[columns];
+		A[i] = new int[columns]{0};
 		for (size_t j = 0; j < columns; j++) {
 			A[i][j] = value;
+		}
+	}
+}
+
+/*
+* constructor for a matrix using an array of values
+*/
+Matrix::Matrix(size_t m, size_t n, int arr_size, const int* arr_vals) : rows{m}, columns{n}, A{new int*[rows]} {
+	int k = 0;
+	for (unsigned int i = 0; i < rows; i++) {
+		A[i] = new int[columns]{0};
+		for (unsigned int j = 0; j < columns && k < arr_size; j++, k++) {
+			A[i][j] = arr_vals[k];
 		}
 	}
 }
@@ -62,11 +85,11 @@ void Matrix::print() {
 * @param value : the value to be replaced at index [i][j]
 * @update index [i][j] of the matrix
 */
-void Matrix::setValue(int i, int j, int value) {
+void Matrix::setValue(size_t i, size_t j, int value) {
 	// bounds checking
-	if (i < 0 || i > int(rows - 1)) {
+	if (i > rows - 1) {
 		throw std::out_of_range("attempted to access invalid row index");
-	} else if (j < 0 || j > int(columns - 1)) {
+	} else if (j > columns - 1) {
 		throw std::out_of_range("attempted to access invalid column index");
 	}
 
@@ -80,11 +103,11 @@ void Matrix::setValue(int i, int j, int value) {
 * @param j : column index of target value
 * @return the value at A[i][j] of the matrix
 */
-int Matrix::at(int i, int j) {
+int Matrix::at(size_t i, size_t j) {
 	// bounds checking
-	if (i < 0 || i > int(rows - 1)) {
+	if (i > rows - 1) {
 		throw std::out_of_range("attempted to access invalid row index");
-	} else if (j < 0 || j > int(columns - 1)) {
+	} else if (j > columns - 1) {
 		throw std::out_of_range("attempted to access invalid column index");
 	}
 
@@ -97,8 +120,8 @@ int Matrix::at(int i, int j) {
 * @param m : the index of the target row
 * @return a pointer to the row array
 */
-int* Matrix::fetchRow(int m) {
-	if (m >= row) {
+int* Matrix::fetchRow(size_t m) {
+	if (m >= rows) {
 		throw std::out_of_range("cant access a row index outside of the size of the matrix");
 	}
 
@@ -114,7 +137,7 @@ int* Matrix::fetchRow(int m) {
 * @param n : the index of the target column
 * @return a pointer to the column array
 */
-int* Matrix::fetchColumn(int n) {
+int* Matrix::fetchColumn(size_t n) {
 	if (n >= columns) {
 		throw std::out_of_range("cant access a column index outside of the size of the matrix");
 	}
@@ -320,20 +343,4 @@ Matrix& Matrix::operator*=(int c) {
 		}
 	}
 	return *this;
-}
-
-////// IDENTITY CLASS //////
-/*
-* identity matrix constructor
-* makes the identity matrix of the same size as the matrix the attribute is applied to
-* @return a new matrix object that contains the identity matrix
-*/
-Identity::Identity(const Matrix& mat) : id{new Matrix(mat.getHeight(), mat.getWidth())} {
-	for (size_t i = 0; i < mat.getHeight(); i++) {
-		for (size_t j = 0; j < mat.getWidth(); j++) {
-			if (i == j) {
-				(*id).setValue(i, j, 1);
-			}
-		}
-	}
 }
